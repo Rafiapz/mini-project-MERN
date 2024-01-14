@@ -23,7 +23,7 @@ function Header() {
             <nav className='navBar' >
                 <div className='dummy' ></div>
                 <div className='header' >
-                <h3 className='heading' >Home</h3>
+                <h3 className='heading' ><Link to={'/'} >Home</Link></h3>
                 <h3 className='heading' ><Link to={'/profile'} >Profile</Link></h3>
                 </div>
                 <div className='logoutDiv'>

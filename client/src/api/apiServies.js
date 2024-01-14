@@ -1,5 +1,5 @@
 import axios from "axios";
-import { login, setuserData, signup } from "../store/redux";
+import { loadData, login, setuserData, signup } from "../store/redux";
 
 export const userAuthentication = () => {
     return (dispatch) => {
@@ -9,6 +9,9 @@ export const userAuthentication = () => {
                 if (res.data.auth) {
                     dispatch({
                         type: "authenticated",
+                        payload: {
+                            userId: res.data.userId
+                        }
                     });
                     dispatch(setuserData(res.data))
                 } else {
@@ -16,7 +19,7 @@ export const userAuthentication = () => {
                         localStorage.removeItem("userToken");
                     }
                     dispatch({
-                        type: "notAuthenticated",
+                        type: "notAuthenticated",                        
                     });
                 }
             })
@@ -33,20 +36,19 @@ export const userLogin = (loginForm) => {
             .then((res) => {
                 if (res.data.auth) {
                     localStorage.setItem('userToken', res.data.token)
-                    dispatch(setuserData(res.data))
                     dispatch(login())
-                    
+
                 } else {
                     alert('invalid email or password')
                 }
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err);
             })
     }
 
 }
 
-export const userSignup = ({ image, username, email, password }) => {
+export const userRegisterOrUpdate = ({ image, username, email, password, id, need },navigate) => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("username", username);
@@ -54,15 +56,46 @@ export const userSignup = ({ image, username, email, password }) => {
     formData.append("password", password);
 
     return (dispatch) => {
-        axios
-            .post("signupSubmit", formData)
-            .then((res) => {
-                localStorage.setItem("userToken", res.data.token);
-                dispatch(signup())
-                dispatch(setuserData(res.data))
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        if (need === 'signup') {
+            axios
+                .post("signupSubmit", formData)
+                .then((res) => {
+                    localStorage.setItem("userToken", res.data.token);
+                    dispatch(signup(res.data.userId))
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else if (need === 'edit') {
+
+            axios.post(`/editProfile/${id}`, formData,{ headers: { 'Content-Type': 'multipart/form-data' }})
+                .then(res => {
+                    navigate('/')
+                }).catch(err => {
+                    console.log(err);
+                })
+        }
+
     };
 };
+
+
+
+export const mountUserData = () => {
+    return (dispatch) => {
+        axios.get('/userData').then(res => {
+            dispatch(setuserData(res.data))
+        }).catch(err => {
+            // console.log(err);
+        })
+    }
+}
+
+export const mountProfileData = () => {
+    return (dispatch) => {
+        axios.get('/userData').then(res => {
+
+            dispatch(loadData(res.data))
+        })
+    }
+}

@@ -1,5 +1,5 @@
 const express=require('express')
-const { signupSumission, loginSubmission } = require('../controller/userController')
+const { signupSumission, loginSubmission, getUserData, authGranded, editProfile } = require('../controller/userController')
 const { isUserAuthenticated, upload} = require('../middleware/userMiddleware')
 const router=express.Router()
 const userCol = require("../models/usersSchema");
@@ -9,15 +9,19 @@ router.post('/signupSubmit',upload.single('file'),signupSumission)
 
 router.post('/loginSubmit',loginSubmission)
 
-router.get('/gethome',isUserAuthenticated)
+router.get('/userData',isUserAuthenticated,getUserData)
 
-router.get('/auth',isUserAuthenticated)
+router.get('/auth',isUserAuthenticated,authGranded)
 
-router.get('/getusersData',async(req,res)=>{
+router.post('/editProfile/:id',upload.single('file'),isUserAuthenticated,editProfile)
 
-    const data= await userCol.find({})
+// router.get('/gethome',isUserAuthenticated)
 
-    res.json({users:data})
-})
+// router.get('/getusersData',async(req,res)=>{
+
+//     const data= await userCol.find({})
+
+//     res.json({users:data})
+// })
 
 module.exports=router

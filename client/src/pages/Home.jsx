@@ -1,11 +1,26 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from '../components/Header/Header'
 import './Home.css'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { unSetuserData,  } from '../store/redux'
+import { mountUserData, userAuthentication } from '../api/apiServies'
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
 
   const { username, email, image } = useSelector(state => state.userData)
+  const auth=useSelector(state=>state.userAuth)
+  const navigate=useNavigate()
+  const dispatch=useDispatch()
+
+  useEffect(() => {    
+        
+      dispatch(mountUserData())
+    return () => {
+      dispatch(unSetuserData())
+    }
+  }, [])
+  
 
   const path = `http://localhost:3100/uploads/${image}`
 

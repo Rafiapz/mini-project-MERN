@@ -1,26 +1,27 @@
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const userCol=require('../models/usersSchema')
+const userCol = require('../models/usersSchema')
 const secret = process.env.jwtSecret
 
 const generateToken = (payload) => {
-  return jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: 60*30 });
+  return jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: 60* 30 });
 };
 
-const isUserAuthenticated = async (req, res) => {
+const isUserAuthenticated = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
     const decoded = jwt.verify(token, secret);
-    if(decoded){
-        const userData=await userCol.findOne({email:decoded.id})
-       res.json({ auth: true,userData });
+    if (decoded) {
+      req.decoded=decoded
+      next()
     }
-   
+
   } catch (error) {
+
     if (error.name === 'TokenExpiredError') {
       res.json({ auth: false, message: 'tokenExpired' })
-    }else{      
-      res.json({auth:false})
+    } else {
+      res.json({ auth: false })
     }
   }
 

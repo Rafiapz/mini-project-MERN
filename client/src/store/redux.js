@@ -14,7 +14,10 @@ const initialForm = {
 };
 
 const initialState = {
-  userAuth: false,
+  userAuth: {
+    auth:false,
+    userId:''
+  },
   adminAuth: false,
   userData: {},
   userForm: initialForm
@@ -23,15 +26,34 @@ const initialState = {
 const userAuthRecucer = (state = initialState.userAuth, action) => {
   switch (action.type) {
     case "authenticated":
-      return (state = true);
+      return {
+        ...state, 
+          auth:true,
+          userId:action.payload.userId
+        }
     case "notAuthenticated":
-      return (state = false);
+      return {
+        ...state,
+        auth:false,
+        userId:''
+      }
     case "logout":
-      return (state = false);
+      return {
+        ...state,
+        auth:false,
+        userId:''
+      }
     case "login":
-      return (state = true);
+      return {
+        ...state,
+        auth:true
+      }
     case 'signup':
-      return (state = true)
+      return {
+        ...state,
+        auth:true,
+        userId:action.payload.userId
+      }
     default:
       return state;
   }
@@ -61,6 +83,22 @@ export const userFormReducer = (state = initialState.userForm, action) => {
         ...state,
         profilePhotoUrl: action.payload.url
       }
+    case 'loadData':
+      return{
+        ...state,
+        username:action.payload.username,
+        email:action.payload.email,
+        password:action.payload.password,
+        profilePhoto:action.payload.profilePhoto
+      }  
+    case 'unLoadData':
+      return{
+        ...state,
+        username:'',
+        email:'',
+        password:'',
+        profilePhoto:''
+      }  
 
     default:
       return state;
@@ -69,16 +107,28 @@ export const userFormReducer = (state = initialState.userForm, action) => {
 
 export const userDataReducer = (state = initialState.userData, action) => {
 
-  if (action.type === 'setUserData') {
-    return {
+  switch (action.type) {
+    case 'setUserData':
+          return {
       ...state,
       username: action.payload.username,
       email: action.payload.email,
       image: action.payload.image,
 
     }
+    case 'unSetuserData':
+      return{
+        ...state,
+        username: action.payload.username,
+        email: action.payload.email,
+        image: action.payload.image,
+  
+      }  
+  
+    default:
+      return state
   }
-  return state
+
 }
 
 
@@ -89,20 +139,55 @@ const adminAuthRecucer = (state = initialState.userAuth, action) => {
 };
 
 
-export const signup = () => {
+export const signup = (userId) => {
   return {
-    type: 'signup'
+    type: 'signup',
+    payload:{
+      userId
+    }
   }
 }
 
 export const setuserData = ({ userData }) => {
-
   return {
     type: 'setUserData',
     payload: {
-      username: userData.username,
-      email: userData.email,
-      image: userData.profilePhoto
+      username: userData?.username,
+      email: userData?.email,
+      image: userData?.profilePhoto
+    }
+  }
+}
+export const loadData=({userData})=>{
+  return{
+    type:'loadData',
+    payload:{
+      username:userData?.username,
+      email:userData?.email,
+      password:null,
+      profilePhoto:userData?.profilePhoto
+    }
+  }
+}
+export const unSetuserData=()=>{
+  return{
+    type:'unSetuserData',
+    payload:{
+      username: '',
+      email: '',
+      image:''
+    }
+  }
+}
+
+export const unMountProfileData=()=>{
+  return{
+    type:'unLoadData',
+    payload:{
+      username:'',
+      email:'',
+      password:'',
+      profilePhoto:''
     }
   }
 }

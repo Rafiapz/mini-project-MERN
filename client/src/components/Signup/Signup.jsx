@@ -1,59 +1,51 @@
 import "./Signup.css";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userSignup } from "../../api/apiServies";
-import { setProfilePhotoUrl, setUserForm } from "../../store/redux";
+import { mountProfileData, userRegisterOrUpdate, } from "../../api/apiServies";
+import { setProfilePhotoUrl, setUserForm, unMountProfileData } from "../../store/redux";
 
 function Signup() {
 
-
-    // const initialSignupForm = {
-    //     username: "",
-    //     email: "",
-    //     password: "",
-    //     profilePhotoUrl: "",
-    //     profilePhoto: null
-    // };
-
-    const userForm=useSelector(state=>state.userForm)
-    
+    const userForm = useSelector(state => state.userForm)
+    const [image, setImage] = useState()
     const navigate = useNavigate()
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
+    const { pathname } = useLocation()
+    const userAuthId = useSelector(state => state.userAuthId)
 
-    // const [signupForm, setSignupForm] = useState(initialSignupForm);
+    useEffect(() => {
+        if (pathname === '/profile') {
+            dispatch(mountProfileData())
+        }
+        return () => {
+            dispatch(unMountProfileData())
+        }
+    }, [])
+
 
     const handleSignupForm = (event) => {
 
         dispatch(setUserForm(event))
-
-        // setSignupForm((prev) => {
-        //     return {
-        //         ...prev,
-        //         [event.target.name]: event.target.value
-        //     }
-        // })
     };
 
     const handleProfilePhoto = (event) => {
         const url = URL.createObjectURL(event.target.files[0])
         setImage(event.target.files[0])
         dispatch(setProfilePhotoUrl(url))
-        // setSignupForm((prev) => {
-        //     return {
-        //         ...prev,
-        //         profilePhotoUrl: url,
 
-        //     }
-        // })
     }
 
-    const [image, setImage] = useState()
-
     const handleSubmission = () => {
-        dispatch(userSignup({...userForm,image}))
-        navigate('/')
-       
+        if (pathname === '/signup') {
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'signup' }))
+            navigate('/')
+        } else if (pathname === '/profile') {
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'edit', id: userAuthId },navigate))
+            
+        }
+
+
     };
 
 
@@ -108,7 +100,7 @@ function Signup() {
                 <div className="mb-4">
                     <p className="text-sm font-semibold">Image Preview:</p>
                     <img
-                        src={userForm.profilePhotoUrl}
+                        src={userForm.profilePhotoUrl ? userForm.profilePhotoUrl : `http://localhost:3100/uploads/${userForm.profilePhoto}`}
                         alt="Profile Preview"
                         className="mt-2 max-w-full w-16 h-16"
                     />

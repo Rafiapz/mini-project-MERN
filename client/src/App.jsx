@@ -12,7 +12,7 @@ import { userAuthentication } from './api/apiServies'
 
 
 function App() {
-  const userAuth = useSelector(state => state.userAuth)
+  const {auth} = useSelector(state => state.userAuth)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(userAuthentication())
@@ -20,11 +20,12 @@ function App() {
     }
   }, [])
 
+
   return (
     <>
 
       <Routes>
-        {userAuth ?
+        {auth ?
           <>
             <Route path='/' element={<Home />} />
             <Route path='/profile' element={<Profile />} />
