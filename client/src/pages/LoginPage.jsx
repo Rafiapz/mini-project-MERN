@@ -10,7 +10,6 @@ function LoginPage({}) {
 
   return (
     <>
-      <Header />
       <Login />
     </>
   );

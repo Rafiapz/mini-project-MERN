@@ -13,15 +13,8 @@ router.get('/userData',isUserAuthenticated,getUserData)
 
 router.get('/auth',isUserAuthenticated,authGranded)
 
-router.post('/editProfile/:id',upload.single('file'),isUserAuthenticated,editProfile)
+router.post('/editProfile/:id',isUserAuthenticated,upload.single('file'),editProfile)
 
-// router.get('/gethome',isUserAuthenticated)
 
-// router.get('/getusersData',async(req,res)=>{
-
-//     const data= await userCol.find({})
-
-//     res.json({users:data})
-// })
 
 module.exports=router

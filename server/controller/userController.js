@@ -71,7 +71,7 @@ module.exports = {
 
   getUserData: async (req, res) => {
     try {
-      const token = req.headers.authorization;
+      const token = req.headers.userauthorization;
       const decoded = jwt.verify(token, secret);
       const userData = await userCol.findOne({ _id: decoded.id })
       res.json({ userData })
@@ -84,7 +84,6 @@ module.exports = {
     try {
 
       const decoded = req.decoded;
-
       res.json({ auth: true, userId: decoded.id })
     } catch (error) {
       console.log(error);

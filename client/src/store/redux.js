@@ -19,10 +19,11 @@ const initialState = {
     userId:''
   },
   adminAuth: {
-    auth:true,
+    auth:false,
   },
   userData: {},
-  userForm: initialForm
+  userForm: initialForm,
+  usersList:[]
 };
 
 //admin reducers
@@ -40,12 +41,12 @@ export const adminAuthRecucer=(state=initialState.adminAuth,action)=>{
         ...state,
         auth:false
       }  
-    case 'login':
+    case 'loginAdmin':
       return{
         ...state,
         auth:true
       }  
-    case 'logout':
+    case 'logoutAdmin':
       return{
         ...state,
         auth:false
@@ -55,6 +56,24 @@ export const adminAuthRecucer=(state=initialState.adminAuth,action)=>{
       return state
   }
 }
+
+export const usersListReducer = (state = initialState.usersList, action) => {
+  switch (action.type) {
+    case 'loadAllUsers':
+     return action.payload.usersList.map((user)=>{
+        return{
+          username:user.username,
+          email:user.email,
+          profilePhoto:user.profilePhoto,
+          _id:user._id
+        }
+      })
+     
+    default:
+      return state;
+  }
+};
+
 
 // user reducers
 
@@ -188,13 +207,13 @@ export const setuserData = ({ userData }) => {
     }
   }
 }
-export const loadData=({userData})=>{
+export const loadData=(userData)=>{
   return{
     type:'loadData',
     payload:{
       username:userData?.username,
       email:userData?.email,
-      password:null,
+      password:'',
       profilePhoto:userData?.profilePhoto
     }
   }
@@ -252,7 +271,7 @@ export const setProfilePhotoUrl = (url) => {
   return {
     type: 'setPhoto',
     payload: {
-      url
+      url:url
     }
   }
 }
@@ -273,7 +292,8 @@ const rootReducer = combineReducers({
   userAuth: userAuthRecucer,
   adminAuth: adminAuthRecucer,
   userData: userDataReducer,
-  userForm: userFormReducer
+  userForm: userFormReducer,
+  usersList:usersListReducer
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

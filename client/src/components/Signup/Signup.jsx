@@ -1,10 +1,10 @@
 import "./Signup.css";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { mountProfileData, userRegisterOrUpdate, } from "../../api/apiServies";
+import { mountProfileData, mountUserDetails, userRegisterOrUpdate, } from "../../api/apiServies";
 import { setProfilePhotoUrl, setUserForm, unMountProfileData } from "../../store/redux";
-import {useForm} from 'react-hook-form'
+
 
 function Signup() {
 
@@ -14,14 +14,21 @@ function Signup() {
     const dispatch = useDispatch()
     const { pathname } = useLocation()
     const userAuthId = useSelector(state => state.userAuthId)
+    const {id}=useParams()
     
 
+    const path=pathname.split('/').at(2)
+
     useEffect(() => {
+
         if (pathname === '/profile') {
             dispatch(mountProfileData())
+        }else if(path==='edit-userByAdmin'){
+            dispatch(mountUserDetails(id))
         }
         return () => {
             dispatch(unMountProfileData())
+            dispatch(setProfilePhotoUrl(null))
         }
     }, [])
 
@@ -40,13 +47,14 @@ function Signup() {
 
     const handleSubmission = () => {
         if (pathname === '/signup') {
-            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'signup' }))
-            navigate('/')
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'signup' },navigate))
         } else if (pathname === '/profile') {
-            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'edit', id: userAuthId },navigate))
-            
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'edit', id: userAuthId },navigate))            
+        }else if(path==='edit-userByAdmin'){
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'edit-by-admin', id},navigate))
+        }else if(pathname==='/admin/create-user'){
+            dispatch(userRegisterOrUpdate({ ...userForm, image, need: 'createUser' },navigate))            
         }
-
 
     };
 

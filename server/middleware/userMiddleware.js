@@ -4,20 +4,24 @@ const userCol = require('../models/usersSchema')
 const secret = process.env.jwtSecret
 
 const generateToken = (payload) => {
-  return jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: 60* 30 });
+  return jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: 60 * 60 * 5 });
 };
 
 const isUserAuthenticated = async (req, res, next) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = jwt.verify(token, secret);
-    if (decoded) {
-      req.decoded=decoded
-      next()
+    const token = req.headers.userauthorization;
+
+    if (token) {
+      const decoded = jwt.verify(token, secret);
+      if (decoded) {
+
+        req.decoded = decoded
+        next()
+      }
     }
 
   } catch (error) {
-
+    console.log(error);
     if (error.name === 'TokenExpiredError') {
       res.json({ auth: false, message: 'tokenExpired' })
     } else {

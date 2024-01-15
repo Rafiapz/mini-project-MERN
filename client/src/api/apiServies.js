@@ -1,6 +1,6 @@
 import axios from "axios";
 import { loadData, login, setuserData, signup } from "../store/redux";
-import  toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 export const userAuthentication = () => {
     return (dispatch) => {
@@ -65,6 +65,7 @@ export const userRegisterOrUpdate = (
                 .then((res) => {
                     localStorage.setItem("userToken", res.data.token);
                     dispatch(signup(res.data.userId));
+                    navigate('/')
                 })
                 .catch((err) => {
                     console.log(err);
@@ -80,6 +81,28 @@ export const userRegisterOrUpdate = (
                 .catch((err) => {
                     console.log(err);
                 });
+        } else if (need ==='edit-by-admin') {
+            axios
+                .post(`/admin/edituser/${id}`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                })
+                .then((res) => {
+                    navigate("/admin");
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }else if(need==='createUser'){
+            console.log('hjhj');
+            axios.post('/admin/createUser',formData).then(res=>{
+               if(res.data.created){
+                navigate('/admin')
+               }else{
+                navigate('/admin')
+               }
+            }).catch(err=>{
+                console.log(err);
+            })
         }
     };
 };
@@ -100,10 +123,11 @@ export const mountUserData = () => {
 export const mountProfileData = () => {
     return (dispatch) => {
         axios.get("/userData").then((res) => {
-            dispatch(loadData(res.data));
+            dispatch(loadData(res.data.userData));
         });
     };
 };
+
 
 
 //admin
@@ -114,13 +138,15 @@ export const adminLogin = (form) => {
 
         axios.post('/admin/adminLogin', form).then(res => {
 
-            if(res.data.auth){
-            dispatch({
-                type:'adminAuthenticated'
-            })                
-            }else{
+            if (res.data.auth) {
+                localStorage.setItem("adminToken", res.data.token);
                 dispatch({
-                    type:'adminNotAuthenticated'
+                    type: 'loginAdmin'
+                })
+
+            } else {
+                dispatch({
+                    type: 'adminNotAuthenticated'
                 })
                 toast(res.data.message)
             }
@@ -130,5 +156,70 @@ export const adminLogin = (form) => {
         })
     }
 
-
 }
+
+export const adminAuthentication = () => {
+    return (dispatch) => {
+        axios
+            .get("/admin/auth")
+            .then((res) => {
+                if (res.data.auth) {
+                    dispatch({
+                        type: 'adminAuthenticated'
+                    })
+                } else {
+                    if (res.data.message == "tokenExpired") {
+                        localStorage.removeItem("adminToken");
+                    }
+                    dispatch({
+                        type: "adminNotAuthenticated",
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+};
+
+export const loadAllusers = (setDisplayUser) => {
+    return (dispatch) => {
+        axios.get('/admin/allusers').then(res => {
+            dispatch({
+                type: 'loadAllUsers',
+                payload: {
+                    usersList: res.data.usersList
+                }
+            })
+            setDisplayUser(res.data.usersList)
+
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+}
+
+export const mountUserDetails = (id) => {
+    return (dispatch) => {
+        axios.get(`/admin/user-details?user=${id}`).then(res => {
+            dispatch(loadData(res.data.details))
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+}
+
+export const deleteUser=(id,setOpen,setDisplayUser)=>{
+    return(dispatch)=>{
+        axios.delete(`/admin/delete-user/${id}`).then(res=>{
+            if(res.data.deleted){
+                dispatch(loadAllusers(setDisplayUser))                
+            }
+            setOpen(false)
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
+}
+
+

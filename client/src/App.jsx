@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react'
 import axios from './api/axios'
 import Profile from './pages/Profile'
 import { useDispatch, useSelector } from 'react-redux'
-import { userAuthentication } from './api/apiServies'
+import { adminAuthentication, userAuthentication } from './api/apiServies'
 import AdminHome from './pages/AdminHome'
 import { Toaster } from 'react-hot-toast';
+import EditUser from './pages/EditUser'
+import CreateUser from './pages/CreateUser'
 
 
 
@@ -19,6 +21,7 @@ function App() {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(userAuthentication())
+    dispatch(adminAuthentication())
     return () => {
     }
   }, [])
@@ -45,6 +48,8 @@ function App() {
           adminAuth?
             <>
             <Route path='/admin' element={<AdminHome/>} />
+            <Route path='/admin/edit-userByAdmin/:id' element={<EditUser/>} />
+            <Route path='/admin/create-user' element={<CreateUser/>} />
             </>
           :
           <>
