@@ -8,11 +8,14 @@ import axios from './api/axios'
 import Profile from './pages/Profile'
 import { useDispatch, useSelector } from 'react-redux'
 import { userAuthentication } from './api/apiServies'
+import AdminHome from './pages/AdminHome'
+import { Toaster } from 'react-hot-toast';
 
 
 
 function App() {
-  const {auth} = useSelector(state => state.userAuth)
+  const userAuth = useSelector(state => state.userAuth.auth)
+  const adminAuth=useSelector(state=>state.adminAuth.auth)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(userAuthentication())
@@ -21,11 +24,12 @@ function App() {
   }, [])
 
 
+
   return (
     <>
-
+      <Toaster position='top-center' containerClassName='text-red-500' />
       <Routes>
-        {auth ?
+        {userAuth ?
           <>
             <Route path='/' element={<Home />} />
             <Route path='/profile' element={<Profile />} />
@@ -35,6 +39,16 @@ function App() {
           <>
             <Route path='/' element={<LoginPage />} />
             <Route path='/signup' element={<SignupPage />} />
+          </>
+        }
+        {
+          adminAuth?
+            <>
+            <Route path='/admin' element={<AdminHome/>} />
+            </>
+          :
+          <>
+          <Route path='/admin' element={<LoginPage/>} />
           </>
         }
 

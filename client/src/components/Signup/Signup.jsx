@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { mountProfileData, userRegisterOrUpdate, } from "../../api/apiServies";
 import { setProfilePhotoUrl, setUserForm, unMountProfileData } from "../../store/redux";
+import {useForm} from 'react-hook-form'
 
 function Signup() {
 
@@ -13,6 +14,7 @@ function Signup() {
     const dispatch = useDispatch()
     const { pathname } = useLocation()
     const userAuthId = useSelector(state => state.userAuthId)
+    
 
     useEffect(() => {
         if (pathname === '/profile') {
@@ -57,6 +59,7 @@ function Signup() {
                 <label className="block mb-4">
                     Username:
                     <input
+                        
                         type="text"
                         name="username"
                         className="mt-1 p-2 border rounded w-full"

@@ -5,6 +5,7 @@ const cors=require('cors')
 const bodyParser=require('express').json
 const jwt=require('jsonwebtoken')
 const userRoute=require('./routes/userRoutes')
+const adminRoute=require('./routes/adminRoutes')
 const app=express()
 const fs=require('fs')
 const path=require('path')
@@ -19,5 +20,7 @@ app.use(bodyParser())
 app.use(express.static(path.join(__dirname,'public')))
 
 app.use('/',userRoute)
+
+app.use('/admin',adminRoute)
 
 app.listen(port,()=>console.log(`server running on the ${port}`))

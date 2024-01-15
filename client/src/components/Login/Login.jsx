@@ -1,34 +1,39 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import {Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { login } from '../../store/redux'
-import { userLogin } from '../../api/apiServies'
+import { adminLogin, userLogin } from '../../api/apiServies'
 
-function Login({}) {
+function Login({ }) {
 
-    const [loginForm,setLoginForm]=useState({email:'',password:''})
-    const dispatch=useDispatch()
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' })
+  const dispatch = useDispatch()
+  const { pathname } = useLocation()
 
-    const navigate=useNavigate()
+  const handleChange = (event) => {
 
-    const handleChange=(event)=>{
+    setLoginForm((prev) => {
+      return {
+        ...prev,
+        [event.target.name]: event.target.value
+      }
+    })
 
-      setLoginForm((prev)=>{
-        return{
-          ...prev,
-          [event.target.name]:event.target.value
-        }
-      })
+  }
 
+
+  const handleLoginSubmit = () => {
+
+    if (pathname === '/') {
+      dispatch(userLogin(loginForm))
+    }else if(pathname==='/admin'){
+      dispatch(adminLogin(loginForm))
     }
 
-    const handleLoginSubmit=()=>{
 
-        dispatch(userLogin(loginForm))
-       
 
-    }
+  }
 
   return (
 
@@ -58,14 +63,14 @@ function Login({}) {
           />
         </label>
         <div className='flex' >
-        <button
-          type="button"
-          className="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
-          onClick={handleLoginSubmit}
-        >
-          Login
-        </button>
-        <Link to='/signup' className='ml-3 mt-1' >Create an Account</Link>
+          <button
+            type="button"
+            className="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
+            onClick={handleLoginSubmit}
+          >
+            Login
+          </button>
+          <Link to='/signup' className='ml-3 mt-1' >Create an Account</Link>
         </div>
       </form>
     </div>

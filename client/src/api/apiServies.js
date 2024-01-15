@@ -1,5 +1,6 @@
 import axios from "axios";
 import { loadData, login, setuserData, signup } from "../store/redux";
+import  toast from 'react-hot-toast';
 
 export const userAuthentication = () => {
     return (dispatch) => {
@@ -10,16 +11,16 @@ export const userAuthentication = () => {
                     dispatch({
                         type: "authenticated",
                         payload: {
-                            userId: res.data.userId
-                        }
+                            userId: res.data.userId,
+                        },
                     });
-                    dispatch(setuserData(res.data))
+                    dispatch(setuserData(res.data));
                 } else {
                     if (res.data.message == "tokenExpired") {
                         localStorage.removeItem("userToken");
                     }
                     dispatch({
-                        type: "notAuthenticated",                        
+                        type: "notAuthenticated",
                     });
                 }
             })
@@ -30,25 +31,27 @@ export const userAuthentication = () => {
 };
 
 export const userLogin = (loginForm) => {
-
     return (dispatch) => {
-        axios.post('/loginSubmit', loginForm)
+        axios
+            .post("/loginSubmit", loginForm)
             .then((res) => {
                 if (res.data.auth) {
-                    localStorage.setItem('userToken', res.data.token)
-                    dispatch(login())
-
+                    localStorage.setItem("userToken", res.data.token);
+                    dispatch(login());
                 } else {
-                    alert('invalid email or password')
+                    alert("invalid email or password");
                 }
-            }).catch(err => {
-                console.log(err);
             })
-    }
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+};
 
-}
-
-export const userRegisterOrUpdate = ({ image, username, email, password, id, need },navigate) => {
+export const userRegisterOrUpdate = (
+    { image, username, email, password, id, need },
+    navigate
+) => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("username", username);
@@ -56,46 +59,76 @@ export const userRegisterOrUpdate = ({ image, username, email, password, id, nee
     formData.append("password", password);
 
     return (dispatch) => {
-        if (need === 'signup') {
+        if (need === "signup") {
             axios
                 .post("signupSubmit", formData)
                 .then((res) => {
                     localStorage.setItem("userToken", res.data.token);
-                    dispatch(signup(res.data.userId))
+                    dispatch(signup(res.data.userId));
                 })
                 .catch((err) => {
                     console.log(err);
                 });
-        } else if (need === 'edit') {
-
-            axios.post(`/editProfile/${id}`, formData,{ headers: { 'Content-Type': 'multipart/form-data' }})
-                .then(res => {
-                    navigate('/')
-                }).catch(err => {
-                    console.log(err);
+        } else if (need === "edit") {
+            axios
+                .post(`/editProfile/${id}`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
                 })
+                .then((res) => {
+                    navigate("/");
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
+    };
+};
 
+export const mountUserData = () => {
+    return (dispatch) => {
+        axios
+            .get("/userData")
+            .then((res) => {
+                dispatch(setuserData(res.data));
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+};
+
+export const mountProfileData = () => {
+    return (dispatch) => {
+        axios.get("/userData").then((res) => {
+            dispatch(loadData(res.data));
+        });
     };
 };
 
 
+//admin
 
-export const mountUserData = () => {
+export const adminLogin = (form) => {
+
     return (dispatch) => {
-        axios.get('/userData').then(res => {
-            dispatch(setuserData(res.data))
+
+        axios.post('/admin/adminLogin', form).then(res => {
+
+            if(res.data.auth){
+            dispatch({
+                type:'adminAuthenticated'
+            })                
+            }else{
+                dispatch({
+                    type:'adminNotAuthenticated'
+                })
+                toast(res.data.message)
+            }
+
         }).catch(err => {
-            // console.log(err);
+            console.log(err);
         })
     }
-}
 
-export const mountProfileData = () => {
-    return (dispatch) => {
-        axios.get('/userData').then(res => {
 
-            dispatch(loadData(res.data))
-        })
-    }
 }

@@ -18,12 +18,47 @@ const initialState = {
     auth:false,
     userId:''
   },
-  adminAuth: false,
+  adminAuth: {
+    auth:true,
+  },
   userData: {},
   userForm: initialForm
 };
 
-const userAuthRecucer = (state = initialState.userAuth, action) => {
+//admin reducers
+
+export const adminAuthRecucer=(state=initialState.adminAuth,action)=>{
+
+  switch (action.type) {
+    case 'adminAuthenticated':
+      return{
+        ...state,
+        auth:true
+      }
+    case 'adminNotAuthenticated':
+      return{
+        ...state,
+        auth:false
+      }  
+    case 'login':
+      return{
+        ...state,
+        auth:true
+      }  
+    case 'logout':
+      return{
+        ...state,
+        auth:false
+      }  
+  
+    default:
+      return state
+  }
+}
+
+// user reducers
+
+export const userAuthRecucer = (state = initialState.userAuth, action) => {
   switch (action.type) {
     case "authenticated":
       return {
@@ -132,12 +167,7 @@ export const userDataReducer = (state = initialState.userData, action) => {
 }
 
 
-
-
-const adminAuthRecucer = (state = initialState.userAuth, action) => {
-  return {};
-};
-
+// user action creaters
 
 export const signup = (userId) => {
   return {
