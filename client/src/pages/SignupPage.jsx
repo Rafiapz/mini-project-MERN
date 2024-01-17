@@ -6,7 +6,7 @@ function SignupPage() {
   return (
 
     <>
-        <Header/>
+      <div style={{height:'50px'}} ></div>
         <Signup/>
     </>
   )

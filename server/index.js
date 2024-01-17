@@ -12,7 +12,11 @@ const path=require('path')
 const port=3100
 
 
-app.use(cors())
+app.use(cors({
+    origin:'http://localhost:5173',
+    methods:'GET,POST,PUT,PATCH,HEAD,DELETE',
+    credentials:true
+}))
 
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))

@@ -26,6 +26,7 @@ export const userAuthentication = () => {
             })
             .catch((err) => {
                 console.log(err);
+                toast('Network error')
             });
     };
 };
@@ -38,8 +39,9 @@ export const userLogin = (loginForm) => {
                 if (res.data.auth) {
                     localStorage.setItem("userToken", res.data.token);
                     dispatch(login());
+                    dispatch(setuserData(res.data));
                 } else {
-                    alert("invalid email or password");
+                    toast("invalid email or password");
                 }
             })
             .catch((err) => {
@@ -66,9 +68,11 @@ export const userRegisterOrUpdate = (
                     localStorage.setItem("userToken", res.data.token);
                     dispatch(signup(res.data.userId));
                     navigate('/')
+                    toast('Successfully submitted')
                 })
                 .catch((err) => {
                     console.log(err);
+                    toast('Network error')
                 });
         } else if (need === "edit") {
             axios
@@ -77,9 +81,11 @@ export const userRegisterOrUpdate = (
                 })
                 .then((res) => {
                     navigate("/");
+                    toast('Successfully edited')
                 })
                 .catch((err) => {
                     console.log(err);
+                    toast('Somthing went wrong')
                 });
         } else if (need ==='edit-by-admin') {
             axios
@@ -88,20 +94,25 @@ export const userRegisterOrUpdate = (
                 })
                 .then((res) => {
                     navigate("/admin");
+                    toast('Successfully edited')
                 })
                 .catch((err) => {
                     console.log(err);
+                    toast('Somthing went wrong')
                 });
         }else if(need==='createUser'){
             console.log('hjhj');
             axios.post('/admin/createUser',formData).then(res=>{
                if(res.data.created){
                 navigate('/admin')
+                toast('Successfully created')
                }else{
                 navigate('/admin')
+                toast("Couldn't create user")
                }
             }).catch(err=>{
                 console.log(err);
+                toast('Somthing went wrong')
             })
         }
     };
@@ -178,6 +189,7 @@ export const adminAuthentication = () => {
             })
             .catch((err) => {
                 console.log(err);
+                toast("Network error")
             });
     };
 };
@@ -213,7 +225,8 @@ export const deleteUser=(id,setOpen,setDisplayUser)=>{
     return(dispatch)=>{
         axios.delete(`/admin/delete-user/${id}`).then(res=>{
             if(res.data.deleted){
-                dispatch(loadAllusers(setDisplayUser))                
+                dispatch(loadAllusers(setDisplayUser))     
+                toast('Succefully deleted')           
             }
             setOpen(false)
         }).catch(err=>{

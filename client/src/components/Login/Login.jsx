@@ -65,7 +65,7 @@ function Login({ }) {
         <div className='flex' >
           <button
             type="button"
-            className="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
+            className="bg-emerald-800 text-white py-2 px-4 rounded cursor-pointer"
             onClick={handleLoginSubmit}
           >
             Login

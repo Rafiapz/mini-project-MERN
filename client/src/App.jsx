@@ -12,12 +12,13 @@ import AdminHome from './pages/AdminHome'
 import { Toaster } from 'react-hot-toast';
 import EditUser from './pages/EditUser'
 import CreateUser from './pages/CreateUser'
+import PageNotFound from './pages/PageNotFound'
 
 
 
 function App() {
   const userAuth = useSelector(state => state.userAuth.auth)
-  const adminAuth=useSelector(state=>state.adminAuth.auth)
+  const adminAuth = useSelector(state => state.adminAuth.auth)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(userAuthentication())
@@ -45,17 +46,19 @@ function App() {
           </>
         }
         {
-          adminAuth?
+          adminAuth ?
             <>
-            <Route path='/admin' element={<AdminHome/>} />
-            <Route path='/admin/edit-userByAdmin/:id' element={<EditUser/>} />
-            <Route path='/admin/create-user' element={<CreateUser/>} />
+              <Route path='/admin' element={<AdminHome />} />
+              <Route path='/admin/edit-userByAdmin/:id' element={<EditUser />} />
+              <Route path='/admin/create-user' element={<CreateUser />} />
             </>
-          :
-          <>
-          <Route path='/admin' element={<LoginPage/>} />
-          </>
+            :
+            <>
+              <Route path='/admin' element={<LoginPage />} />
+            </>
         }
+
+        <Route path='*' element={<PageNotFound/>} />
 
       </Routes>
 
